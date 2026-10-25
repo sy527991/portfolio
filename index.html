@@ -1,0 +1,2186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>유사라 | 포트폴리오 - 언어와 데이터를 잇는 인문학도</title>
+  <meta name="description" content="고려대학교 국어국문학과 유사라의 포트폴리오입니다. 인문 데이터 지식그래프 프로젝트(아이즈원 멤버 활동 네트워크) 및 역량을 소개합니다." />
+  
+  <!-- Open Graph / LinkedIn Preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="유사라 | 포트폴리오 - 언어와 데이터를 잇는 인문학도" />
+  <meta property="og:description" content="고려대학교 국어국문학과 유사라의 포트폴리오입니다. 인문 데이터 지식그래프 프로젝트(아이즈원 멤버 활동 네트워크) 및 역량을 소개합니다." />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Pretendard Webfont -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+
+  <!-- D3.js v7 CDN for Network Graph -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+  <style>
+    /* CSS Reset & Variables */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg-surface: #121214;
+      --bg-surface-elevated: #18181b;
+      --bg-muted: #202024;
+      --border-subtle: #242427;
+      --border-medium: #333338;
+      --border-hover: #52525b;
+      --text-white: #fafafa;
+      --text-light: #e4e4e7;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg);
+      color: var(--text-light);
+      font-family: var(--font-family);
+      line-height: 1.65;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Navigation Bar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(10, 10, 10, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s ease;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .brand-link {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: -0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0;
+      transition: opacity 0.2s;
+    }
+
+    .brand-link:hover {
+      opacity: 0.85;
+    }
+
+    .brand-role {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text-dim);
+      border-left: 1px solid var(--border-medium);
+      padding-left: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-item a {
+      font-size: 0.925rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 0.5rem 0.2rem;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .nav-item a:hover {
+      color: var(--text-white);
+    }
+
+    .nav-item a.active {
+      color: var(--text-white);
+      font-weight: 600;
+    }
+
+    .nav-item a.active::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--text-white);
+      border-radius: 2px;
+    }
+
+    /* Mobile Hamburger Menu */
+    .mobile-menu-btn {
+      display: none;
+      padding: 0.5rem;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .mobile-menu-btn:hover {
+      color: var(--text-white);
+    }
+
+    .mobile-nav-drawer {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-medium);
+      padding: 1.25rem 1.5rem;
+      z-index: 99;
+    }
+
+    .mobile-nav-drawer.open {
+      display: block;
+    }
+
+    .mobile-nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .mobile-nav-list a {
+      display: block;
+      padding: 0.6rem 0;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .mobile-nav-list a.active {
+      color: var(--text-white);
+      font-weight: 600;
+    }
+
+    /* Page View Containers (Hash Routing) */
+    .page-section {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      padding: 3.5rem 0 5rem;
+      flex: 1;
+    }
+
+    .page-section.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Common Typography & Layout */
+    .section-eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 2.15rem;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: -0.03em;
+      line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin-top: 1.75rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--text-white);
+      color: var(--bg);
+      border: 1px solid var(--text-white);
+    }
+
+    .btn-primary:hover {
+      background-color: #e4e4e7;
+      border-color: #e4e4e7;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-light);
+      border: 1px solid var(--border-medium);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-hover);
+      background-color: var(--bg-surface-elevated);
+      color: var(--text-white);
+      transform: translateY(-1px);
+    }
+
+    /* Card Component */
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1.75rem;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: var(--border-medium);
+    }
+
+    /* HOME SECTION */
+    .hero-box {
+      padding: 2.5rem 0 3.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 3.5rem;
+    }
+
+    .hero-name {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: -0.035em;
+      line-height: 1.25;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-intro {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      line-height: 1.75;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Featured Project Card on Home */
+    .featured-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .featured-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: var(--border-subtle);
+    }
+
+    .featured-card {
+      background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(18, 18, 20, 0.6) 100%);
+      border: 1px solid var(--border-medium);
+      border-radius: 12px;
+      padding: 2.25rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: block;
+    }
+
+    .featured-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .featured-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: 1px solid var(--border-medium);
+      border-radius: 4px;
+      padding: 0.2rem 0.55rem;
+      margin-bottom: 1rem;
+    }
+
+    .featured-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      line-height: 1.35;
+    }
+
+    .featured-desc {
+      font-size: 0.975rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: -0.02em;
+    }
+
+    .metric-label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+    }
+
+    .featured-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-white);
+      margin-top: 1.5rem;
+    }
+
+    /* ABOUT SECTION */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .about-card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-white);
+      letter-spacing: -0.01em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .about-card-body {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .about-item-strong {
+      color: var(--text-white);
+      font-weight: 600;
+    }
+
+    .skill-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .chip {
+      font-size: 0.825rem;
+      font-weight: 500;
+      color: var(--text-light);
+      background-color: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.35rem 0.75rem;
+      transition: border-color 0.15s ease;
+    }
+
+    .chip:hover {
+      border-color: var(--border-medium);
+      color: var(--text-white);
+    }
+
+    /* PROJECTS SECTION */
+    .project-header {
+      margin-bottom: 3rem;
+    }
+
+    .project-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    .status-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-white);
+      background-color: var(--bg-surface-elevated);
+      border: 1px solid var(--border-medium);
+      border-radius: 4px;
+      padding: 0.2rem 0.6rem;
+    }
+
+    .project-main-title {
+      font-size: 2.15rem;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: -0.03em;
+      line-height: 1.35;
+      margin-bottom: 1.25rem;
+    }
+
+    .project-block {
+      margin-bottom: 3.5rem;
+    }
+
+    .block-heading {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-white);
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .question-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .question-item {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 1.15rem 1.35rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .question-num {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      background-color: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .question-text {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* Data Model Cards/Table */
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .model-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .model-table th, .model-table td {
+      text-align: left;
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .model-table th {
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 0.775rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .model-table td {
+      color: var(--text-muted);
+    }
+
+    .model-table td strong {
+      color: var(--text-white);
+      font-weight: 500;
+    }
+
+    /* Interactive Graph Section */
+    .graph-wrapper {
+      background-color: #0d0d0f;
+      border: 1px solid var(--border-medium);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 1.5rem 0 0.75rem;
+      position: relative;
+    }
+
+    .graph-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .filter-btn {
+      font-size: 0.775rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background-color: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 0.3rem 0.65rem;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn:hover {
+      color: var(--text-white);
+      border-color: var(--border-medium);
+    }
+
+    .filter-btn.active {
+      color: var(--bg);
+      background-color: var(--text-white);
+      border-color: var(--text-white);
+      font-weight: 600;
+    }
+
+    .graph-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .graph-action-btn {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      background-color: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
+      transition: all 0.15s ease;
+    }
+
+    .graph-action-btn:hover {
+      color: var(--text-white);
+      border-color: var(--border-medium);
+    }
+
+    #network-svg {
+      display: block;
+      width: 100%;
+      height: 540px;
+      cursor: grab;
+      user-select: none;
+    }
+
+    #network-svg:active {
+      cursor: grabbing;
+    }
+
+    /* Graph Legend */
+    .graph-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 0.85rem 1.25rem;
+      background-color: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .legend-symbol {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+    }
+
+    .legend-symbol.person {
+      background-color: #ffffff;
+      border-radius: 50%;
+    }
+
+    .legend-symbol.agency {
+      background-color: #71717a;
+      border-radius: 2px;
+    }
+
+    .legend-symbol.group {
+      background-color: #d4d4d8;
+      border-radius: 50%;
+    }
+
+    .legend-symbol.career {
+      border: 1.5px solid #ffffff;
+      background: transparent;
+      border-radius: 50%;
+    }
+
+    .legend-symbol.unit {
+      background-color: #3f3f46;
+      border-radius: 50%;
+      width: 9px;
+      height: 9px;
+    }
+
+    /* Graph Node Details Box (Tooltip / Inspector) */
+    .graph-inspector {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      max-width: 440px;
+      background-color: rgba(24, 24, 27, 0.94);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-size: 0.825rem;
+      color: var(--text-light);
+      pointer-events: none;
+      display: none;
+      z-index: 10;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    .graph-inspector.visible {
+      display: block;
+    }
+
+    .inspector-title {
+      font-weight: 700;
+      color: var(--text-white);
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .inspector-type {
+      font-size: 0.725rem;
+      color: var(--text-dim);
+      font-weight: 500;
+      text-transform: uppercase;
+      border: 1px solid var(--border-subtle);
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+    }
+
+    .inspector-relations {
+      margin-top: 0.4rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+
+    .graph-caption {
+      font-size: 0.825rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      text-align: right;
+      margin-top: 0.4rem;
+    }
+
+    /* Process Timeline */
+    .timeline {
+      position: relative;
+      margin-top: 1.5rem;
+      padding-left: 1.5rem;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 6px;
+      bottom: 6px;
+      left: 6px;
+      width: 1px;
+      background-color: var(--border-medium);
+    }
+
+    .timeline-step {
+      position: relative;
+      padding-bottom: 1.75rem;
+    }
+
+    .timeline-step:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -1.5rem;
+      top: 4px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background-color: var(--bg-surface);
+      border: 2px solid var(--border-medium);
+    }
+
+    .timeline-step.completed .timeline-dot {
+      background-color: var(--text-muted);
+      border-color: var(--text-muted);
+    }
+
+    .timeline-step.active .timeline-dot {
+      background-color: var(--text-white);
+      border-color: var(--text-white);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
+    }
+
+    .timeline-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .timeline-status {
+      font-size: 0.725rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      font-weight: 500;
+    }
+
+    .timeline-status.completed {
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .timeline-status.current {
+      color: var(--bg);
+      background-color: var(--text-white);
+      font-weight: 700;
+    }
+
+    .timeline-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Role, AI, Tools block */
+    .meta-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    /* CONTACT SECTION */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin: 2rem 0;
+    }
+
+    .contact-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      min-height: 160px;
+    }
+
+    .contact-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .contact-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .contact-icon {
+      color: var(--text-white);
+    }
+
+    .contact-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+    }
+
+    .contact-value {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-white);
+      word-break: break-all;
+      font-family: inherit;
+    }
+
+    .contact-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      transition: color 0.15s;
+    }
+
+    .contact-card:hover .contact-action {
+      color: var(--text-white);
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 2.5rem 0;
+      margin-top: auto;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .hero-name {
+        font-size: 2.15rem;
+      }
+
+      .section-title {
+        font-size: 1.75rem;
+      }
+
+      .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .about-grid, .model-grid, .meta-cards-grid, .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #network-svg {
+        height: 420px;
+      }
+
+      .graph-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .graph-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <nav class="navbar" aria-label="Main Navigation">
+    <div class="container nav-inner">
+      <a href="#home" class="brand-link" id="brand-link" title="유사라 홈으로 이동">
+        <span>유사라</span>
+        <span class="brand-role">Sara Yoo</span>
+      </a>
+
+      <!-- Desktop Menu -->
+      <ul class="nav-links">
+        <li class="nav-item"><a href="#about" data-target="about">자기소개</a></li>
+        <li class="nav-item"><a href="#projects" data-target="projects">프로젝트</a></li>
+        <li class="nav-item"><a href="#contact" data-target="contact">연락</a></li>
+      </ul>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-menu-btn" id="mobile-toggle" aria-label="메뉴 열기" aria-expanded="false">
+        <svg id="hamburger-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div class="mobile-nav-drawer" id="mobile-drawer">
+      <ul class="mobile-nav-list">
+        <li><a href="#home" data-target="home">홈</a></li>
+        <li><a href="#about" data-target="about">자기소개</a></li>
+        <li><a href="#projects" data-target="projects">프로젝트</a></li>
+        <li><a href="#contact" data-target="contact">연락</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content Areas (Hash Routed) -->
+  <main>
+    <!-- 1. HOME SCREEN (#home) -->
+    <section id="section-home" class="page-section" aria-labelledby="home-heading">
+      <div class="container">
+        <!-- Hero Header -->
+        <div class="hero-box">
+          <span class="section-eyebrow">PORTFOLIO</span>
+          <h1 id="home-heading" class="hero-name">언어와 데이터를 잇는 인문학도, 유사라</h1>
+          <p class="hero-intro">
+            국어국문학을 전공하며 언어를 정확하게 옮기는 일에 관심을 두고 있습니다. 디지털인문학 수업에서 인물, 조직, 활동의 관계를 지식그래프로 설계하는 경험을 쌓고 있습니다.
+          </p>
+          <div class="btn-group">
+            <a href="#projects" class="btn btn-primary">프로젝트 보기</a>
+            <a href="#contact" class="btn btn-secondary">연락하기</a>
+          </div>
+        </div>
+
+        <!-- Featured Project Card -->
+        <div class="featured-section">
+          <div class="featured-label">
+            <span>대표 프로젝트</span>
+          </div>
+
+          <a href="#projects" class="featured-card" title="프로젝트 상세 보기">
+            <span class="featured-badge">고려대학교 디지털인문학응용 팀 프로젝트</span>
+            <h2 class="featured-title">IZ*ONE 멤버 활동 네트워크 지식그래프</h2>
+            <p class="featured-desc">
+              프로젝트 그룹 아이즈원의 데뷔 이전부터 해체 후까지, 12명 멤버의 흩어진 활동 이력과 소속 관계를 하나의 네트워크로 연결하여 경로의 분화와 협업 관계를 탐색하는 지식그래프를 구축하고 있습니다.
+            </p>
+
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <span class="metric-value">멤버 12명</span>
+                <span class="metric-label">분석 대상 아이즈원 전원</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-value">노드 유형 6종</span>
+                <span class="metric-label">인물 · 소속사 · 그룹 · 유닛 등</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-value">관계 유형 6종</span>
+                <span class="metric-label">소속 · 활동 · 재데뷔 · 참여 등</span>
+              </div>
+            </div>
+
+            <div class="featured-footer">
+              <span>상세 내용 및 인터랙티브 그래프 보기</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. ABOUT SCREEN (#about) -->
+    <section id="section-about" class="page-section" aria-labelledby="about-heading">
+      <div class="container">
+        <span class="section-eyebrow">ABOUT</span>
+        <h1 id="about-heading" class="section-title">자기소개</h1>
+        <p class="section-desc">
+          국어국문학 전공 지식을 바탕으로 한 텍스트의 섬세한 이해와, 인문 데이터를 지식그래프로 구조화하는 정형화 분석 역량을 키워가고 있습니다.
+        </p>
+
+        <div class="about-grid">
+          <!-- 학력 -->
+          <div class="card">
+            <h2 class="about-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+              학력
+            </h2>
+            <div class="about-card-body">
+              <p><span class="about-item-strong">고려대학교</span> 국어국문학과</p>
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.2rem;">2024 입학</p>
+              <p style="margin-top: 0.6rem;"><span class="about-item-strong">GKS 이중전공</span></p>
+            </div>
+          </div>
+
+          <!-- 관심 진로 -->
+          <div class="card">
+            <h2 class="about-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              관심 진로
+            </h2>
+            <div class="about-card-body">
+              <p><span class="about-item-strong">번역가</span></p>
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.2rem;">프리랜서 지향 · 서울 활동</p>
+              <p style="margin-top: 0.6rem; font-size: 0.9rem;">
+                언어를 정확하고 자연스럽게 옮기는 작업에 주력하며, 다방면의 인문·문화 콘텐츠 번역을 지향합니다.
+              </p>
+            </div>
+          </div>
+
+          <!-- 수강 과목 -->
+          <div class="card">
+            <h2 class="about-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              수강 과목
+            </h2>
+            <div class="about-card-body">
+              <p><span class="about-item-strong">디지털인문학응용</span></p>
+              <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 0.2rem;">고려대학교 · 2026년 2학기 수강</p>
+              <p style="margin-top: 0.6rem; font-size: 0.9rem;">
+                인문 데이터를 지식그래프로 구축하는 프로젝트 기반 수업으로, 온톨로지 개념을 활용한 데이터 모델 설계와 실습을 수행하고 있습니다.
+              </p>
+            </div>
+          </div>
+
+          <!-- 역량 -->
+          <div class="card">
+            <h2 class="about-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              보유 역량
+            </h2>
+            <div class="about-card-body">
+              <div class="skill-chips">
+                <span class="chip">MS Office (Excel, Word, PowerPoint)</span>
+                <span class="chip">재무 행정 처리 경험</span>
+                <span class="chip">지식그래프 설계 (노드·관계·속성 정의)</span>
+                <span class="chip">Neo4j · Cypher 기초</span>
+                <span class="chip">웹 자료 조사 및 데이터 정리</span>
+                <span class="chip">발표 자료 제작</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PROJECTS SCREEN (#projects) -->
+    <section id="section-projects" class="page-section" aria-labelledby="project-heading">
+      <div class="container">
+        <!-- Project Header -->
+        <div class="project-header">
+          <div class="project-meta-bar">
+            <span class="status-pill">진행 중 (2026년 10월 ~ 12월)</span>
+            <span>4인 팀 프로젝트</span>
+            <span>고려대학교 「디지털인문학응용」</span>
+          </div>
+          <h1 id="project-heading" class="project-main-title">
+            프로젝트 그룹 IZ*ONE(아이즈원)의 데뷔 이전부터 해체 후까지 멤버 활동 네트워크 지식그래프
+          </h1>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="project-block">
+          <h2 class="block-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            문제 의식
+          </h2>
+          <div class="card" style="font-size: 1rem; color: var(--text-light); line-height: 1.8;">
+            프로젝트 그룹 아이즈원은 활동 종료 후 멤버들이 솔로 가수, 새 그룹 재데뷔, 배우 등으로 진로가 나뉘었다. 흩어진 활동 이력과 소속 관계를 하나의 네트워크로 연결하면 개별 검색으로는 보이지 않는 경로의 분화와 협업 관계를 볼 수 있다.
+          </div>
+        </div>
+
+        <!-- Core Questions -->
+        <div class="project-block">
+          <h2 class="block-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            핵심 질문
+          </h2>
+          <ul class="question-list">
+            <li class="question-item">
+              <span class="question-num">1</span>
+              <span class="question-text">해체 이후 멤버들은 솔로, 그룹 재데뷔, 배우 등 어떤 활동 경로로 분화되었는가?</span>
+            </li>
+            <li class="question-item">
+              <span class="question-num">2</span>
+              <span class="question-text">해체 이후 소속사·그룹·방송 활동을 매개로 멤버 간 협업은 어떻게 이어졌는가?</span>
+            </li>
+            <li class="question-item">
+              <span class="question-num">3</span>
+              <span class="question-text">프로듀스48 방영 당시 유닛 조합에 반복되는 패턴이 있는가?</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Data Model -->
+        <div class="project-block">
+          <h2 class="block-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+              <line x1="6" y1="6" x2="6.01" y2="6"></line>
+              <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+            데이터 모델 설계
+          </h2>
+          <div class="model-grid">
+            <!-- Node Types -->
+            <div class="card">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.75rem;">
+                노드 유형 (Node Types · 6종)
+              </h3>
+              <table class="model-table">
+                <thead>
+                  <tr>
+                    <th>유형</th>
+                    <th>설명</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>인물</strong></td>
+                    <td>아이즈원 멤버 12인</td>
+                  </tr>
+                  <tr>
+                    <td><strong>소속사</strong></td>
+                    <td>전속 및 이적 연계 소속사</td>
+                  </tr>
+                  <tr>
+                    <td><strong>아이돌 그룹</strong></td>
+                    <td>데뷔 이전 및 해체 후 재데뷔 그룹</td>
+                  </tr>
+                  <tr>
+                    <td><strong>유닛</strong></td>
+                    <td>프로듀스48 파이널 경연곡 유닛</td>
+                  </tr>
+                  <tr>
+                    <td><strong>해체 후 활동</strong></td>
+                    <td>솔로 가수, 배우, 예능·라디오 등 활동</td>
+                  </tr>
+                  <tr>
+                    <td><strong>시간</strong></td>
+                    <td>재데뷔 연도 등 시간적 축</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Relationship Types -->
+            <div class="card">
+              <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.75rem;">
+                관계 유형 (Relationship Types · 6종)
+              </h3>
+              <table class="model-table">
+                <thead>
+                  <tr>
+                    <th>관계명</th>
+                    <th>방향 및 의미</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>소속되었다</strong></td>
+                    <td>인물 → 소속사</td>
+                  </tr>
+                  <tr>
+                    <td><strong>활동하였다</strong></td>
+                    <td>인물 → 그룹 (데뷔 이전)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>재데뷔하였다</strong></td>
+                    <td>인물 → 그룹 (해체 이후)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>참여하였다</strong></td>
+                    <td>인물 → 유닛 (프로듀스48)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>출연하였다</strong></td>
+                    <td>인물 → 해체 후 활동</td>
+                  </tr>
+                  <tr>
+                    <td><strong>선발되었다</strong></td>
+                    <td>인물 → 광고 모델</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive D3 Force-Directed Network Graph -->
+        <div class="project-block">
+          <h2 class="block-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            인터랙티브 지식그래프 미리보기
+          </h2>
+          <p style="font-size: 0.925rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            노드를 마우스로 드래그하거나 휠로 확대/축소할 수 있습니다. 노드 위에 마우스를 올리면 연결된 관계만 강조됩니다.
+          </p>
+
+          <div class="graph-wrapper">
+            <!-- Toolbar & Filter Buttons -->
+            <div class="graph-toolbar">
+              <div class="filter-group" id="graph-filters">
+                <button class="filter-btn active" data-filter="all">전체</button>
+                <button class="filter-btn" data-filter="person">인물 (12)</button>
+                <button class="filter-btn" data-filter="agency">소속사 (13)</button>
+                <button class="filter-btn" data-filter="group">아이돌 그룹 (5)</button>
+                <button class="filter-btn" data-filter="career">해체 후 진로 (2)</button>
+                <button class="filter-btn" data-filter="unit">프로듀스48 유닛 (2)</button>
+              </div>
+              <div class="graph-actions">
+                <button class="graph-action-btn" id="btn-zoom-in" title="확대">+</button>
+                <button class="graph-action-btn" id="btn-zoom-out" title="축소">−</button>
+                <button class="graph-action-btn" id="btn-zoom-reset" title="원위치">초기화</button>
+              </div>
+            </div>
+
+            <!-- SVG Canvas -->
+            <svg id="network-svg"></svg>
+
+            <!-- Inspector Panel on Hover -->
+            <div class="graph-inspector" id="graph-inspector">
+              <div class="inspector-title">
+                <span id="inspect-name">-</span>
+                <span class="inspector-type" id="inspect-type">-</span>
+              </div>
+              <div class="inspector-relations" id="inspect-details">
+                노드에 마우스를 올리면 연결 관계가 표시됩니다.
+              </div>
+            </div>
+
+            <!-- Legend Bar -->
+            <div class="graph-legend">
+              <span class="legend-item">
+                <span class="legend-symbol person"></span>
+                <span>인물 (흰색 원)</span>
+              </span>
+              <span class="legend-item">
+                <span class="legend-symbol agency"></span>
+                <span>소속사 (회색 사각)</span>
+              </span>
+              <span class="legend-item">
+                <span class="legend-symbol group"></span>
+                <span>아이돌 그룹 (밝은 회색 원)</span>
+              </span>
+              <span class="legend-item">
+                <span class="legend-symbol career"></span>
+                <span>해체 후 진로 (테두리 원)</span>
+              </span>
+              <span class="legend-item">
+                <span class="legend-symbol unit"></span>
+                <span>유닛 (작은 회색 원)</span>
+              </span>
+            </div>
+          </div>
+          <p class="graph-caption">
+            * 팀 기획서의 설계 데이터를 바탕으로 만든 미리보기이며, 최종 데이터는 검증 후 갱신 예정
+          </p>
+        </div>
+
+        <!-- Project Progress (Timeline) -->
+        <div class="project-block">
+          <h2 class="block-heading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 14 14"></polyline>
+            </svg>
+            진행 과정
+          </h2>
+          <div class="card">
+            <div style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem;">
+              현재 상태: <strong style="color: var(--text-white);">설계를 마치고 데이터 구축 단계 진행 중</strong>
+            </div>
+
+            <div class="timeline">
+              <!-- Step 1 -->
+              <div class="timeline-step completed">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">
+                  <span>1. 기획 및 데이터 모델 설계</span>
+                  <span class="timeline-status completed">완료</span>
+                </div>
+                <div class="timeline-desc">노드·관계·속성 온톨로지 정의 완료</div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="timeline-step completed">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">
+                  <span>2. 자료 수집</span>
+                  <span class="timeline-status completed">완료</span>
+                </div>
+                <div class="timeline-desc">해체 전후 이력, 재데뷔 그룹 및 소속사 원천 데이터 취합</div>
+              </div>
+
+              <!-- Step 3 (Current) -->
+              <div class="timeline-step active">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">
+                  <span>3. Neo4j 데이터 입력</span>
+                  <span class="timeline-status current">진행 중</span>
+                </div>
+                <div class="timeline-desc">그래프 데이터베이스에 노드 및 관계 엔터티 구축 중</div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="timeline-step">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">
+                  <span style="color: var(--text-dim);">4. Cypher 질의 작성·검증</span>
+                </div>
+                <div class="timeline-desc">핵심 연구 질문에 대한 질의문 작성 및 패턴 탐색 예정</div>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="timeline-step">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">
+                  <span style="color: var(--text-dim);">5. 시각화</span>
+                </div>
+                <div class="timeline-desc">네트워크 분석 결과 다각적 시각화 도출</div>
+              </div>
+
+              <!-- Step 6 -->
+              <div class="timeline-step">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">
+                  <span style="color: var(--text-dim);">6. 데이터 정제</span>
+                </div>
+                <div class="timeline-desc">누락 데이터 보완 및 일관성 검증</div>
+              </div>
+
+              <!-- Step 7 -->
+              <div class="timeline-step">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">
+                  <span style="color: var(--text-dim);">7. 최종 보고</span>
+                </div>
+                <div class="timeline-desc">지식그래프 기반 연구 결론 및 최종 발표</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role, AI, Tools -->
+        <div class="project-block">
+          <div class="meta-cards-grid">
+            <!-- Role -->
+            <div class="card">
+              <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                나의 역할
+              </h3>
+              <ul style="list-style: disc; margin-left: 1.25rem; font-size: 0.925rem; color: var(--text-muted); line-height: 1.75;">
+                <li>아이즈원 해체 후 멤버들이 재데뷔한 그룹 정보 조사</li>
+                <li>팀 발표 자료(PPT) 작성</li>
+              </ul>
+            </div>
+
+            <!-- AI Usage & Validation -->
+            <div class="card">
+              <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                AI 활용과 검증
+              </h3>
+              <p style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.75;">
+                ChatGPT로 데이터 모델 초안과 Cypher 코드 작성을 보조받고, 그 결과를 원자료와 대조하고 Neo4j에서 직접 실행해 검증했다.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tools Used -->
+        <div class="project-block">
+          <div class="card">
+            <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-white); margin-bottom: 0.75rem;">
+              사용 도구
+            </h3>
+            <div class="skill-chips">
+              <span class="chip">Neo4j</span>
+              <span class="chip">Cypher</span>
+              <span class="chip">ChatGPT</span>
+              <span class="chip">Canva</span>
+              <span class="chip">Google Docs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. CONTACT SCREEN (#contact) -->
+    <section id="section-contact" class="page-section" aria-labelledby="contact-heading">
+      <div class="container">
+        <span class="section-eyebrow">CONTACT</span>
+        <h1 id="contact-heading" class="section-title">연락</h1>
+        <p class="section-desc">
+          번역, 콘텐츠 기획, 인문 데이터 프로젝트 협업 제안을 환영합니다.
+        </p>
+
+        <div class="contact-grid">
+          <!-- Email -->
+          <a href="mailto:[이메일 주소]" class="contact-card" title="이메일 보내기">
+            <div>
+              <div class="contact-card-top">
+                <span class="contact-label">Email</span>
+                <svg class="contact-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <div class="contact-value">[이메일 주소]</div>
+            </div>
+            <div class="contact-action">
+              <span>이메일 쓰기</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </a>
+
+          <!-- LinkedIn -->
+          <a href="[LinkedIn 프로필 주소]" target="_blank" rel="noopener noreferrer" class="contact-card" title="LinkedIn 프로필 보기">
+            <div>
+              <div class="contact-card-top">
+                <span class="contact-label">LinkedIn</span>
+                <svg class="contact-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                  <rect x="2" y="9" width="4" height="12"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+              </div>
+              <div class="contact-value">[LinkedIn 프로필 주소]</div>
+            </div>
+            <div class="contact-action">
+              <span>프로필 방문</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </div>
+          </a>
+
+          <!-- GitHub -->
+          <a href="[GitHub 주소]" target="_blank" rel="noopener noreferrer" class="contact-card" title="GitHub 보기">
+            <div>
+              <div class="contact-card-top">
+                <span class="contact-label">GitHub</span>
+                <svg class="contact-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+              </div>
+              <div class="contact-value">[GitHub 주소]</div>
+            </div>
+            <div class="contact-action">
+              <span>저장소 방문</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 유사라 · 이 사이트는 Google AI Studio의 도움을 받아 제작했습니다.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript: Hash Routing, Mobile Drawer, D3 Force Network -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* --- 1. Hash Routing --- */
+      const routes = ['home', 'about', 'projects', 'contact'];
+      let graphInitialized = false;
+
+      function getCleanRoute() {
+        const hash = window.location.hash.replace(/^#/, '').toLowerCase().trim();
+        return routes.includes(hash) ? hash : 'home';
+      }
+
+      function updateActiveNav(activeRoute) {
+        // Desktop nav
+        document.querySelectorAll('.nav-item a').forEach(link => {
+          const target = link.getAttribute('data-target');
+          if (target === activeRoute) {
+            link.classList.add('active');
+            link.setAttribute('aria-current', 'page');
+          } else {
+            link.classList.remove('active');
+            link.removeAttribute('aria-current');
+          }
+        });
+
+        // Mobile drawer nav
+        document.querySelectorAll('.mobile-nav-list a').forEach(link => {
+          const target = link.getAttribute('data-target');
+          if (target === activeRoute) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+
+      function renderRoute() {
+        const route = getCleanRoute();
+
+        routes.forEach(r => {
+          const sec = document.getElementById('section-' + r);
+          if (!sec) return;
+          if (r === route) {
+            sec.classList.add('active');
+          } else {
+            sec.classList.remove('active');
+          }
+        });
+
+        updateActiveNav(route);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Lazy initialize or resize D3 graph if on projects screen
+        if (route === 'projects') {
+          setTimeout(() => {
+            if (!graphInitialized) {
+              initD3Graph();
+            } else if (window.resizeD3Graph) {
+              window.resizeD3Graph();
+            }
+          }, 80);
+        }
+      }
+
+      window.addEventListener('hashchange', renderRoute);
+      window.addEventListener('DOMContentLoaded', () => {
+        renderRoute();
+        setupMobileMenu();
+      });
+
+      /* --- 2. Mobile Menu Toggle --- */
+      function setupMobileMenu() {
+        const toggleBtn = document.getElementById('mobile-toggle');
+        const drawer = document.getElementById('mobile-drawer');
+
+        if (!toggleBtn || !drawer) return;
+
+        toggleBtn.addEventListener('click', () => {
+          const isOpen = drawer.classList.contains('open');
+          if (isOpen) {
+            drawer.classList.remove('open');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          } else {
+            drawer.classList.add('open');
+            toggleBtn.setAttribute('aria-expanded', 'true');
+          }
+        });
+
+        // Close on link click
+        drawer.querySelectorAll('a').forEach(a => {
+          a.addEventListener('click', () => {
+            drawer.classList.remove('open');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      /* --- 3. D3.js Force-Directed Graph Data & Implementation --- */
+      function initD3Graph() {
+        if (typeof d3 === 'undefined') {
+          console.warn('D3 library not loaded yet');
+          return;
+        }
+
+        const svgEl = document.getElementById('network-svg');
+        if (!svgEl) return;
+        graphInitialized = true;
+
+        /* Raw Graph Data as Specified by User */
+        const rawNodes = [
+          // 12 Members
+          { id: "권은비", type: "person", label: "권은비" },
+          { id: "미야와키 사쿠라", type: "person", label: "미야와키 사쿠라" },
+          { id: "강혜원", type: "person", label: "강혜원" },
+          { id: "최예나", type: "person", label: "최예나" },
+          { id: "이채연", type: "person", label: "이채연" },
+          { id: "김채원", type: "person", label: "김채원" },
+          { id: "김민주", type: "person", label: "김민주" },
+          { id: "야부키 나코", type: "person", label: "야부키 나코" },
+          { id: "혼다 히토미", type: "person", label: "혼다 히토미" },
+          { id: "조유리", type: "person", label: "조유리" },
+          { id: "안유진", type: "person", label: "안유진" },
+          { id: "장원영", type: "person", label: "장원영" },
+
+          // Idol Groups (Pre-debut and Redebut)
+          { id: "HKT48", type: "group", label: "HKT48", sub: "이전 활동" },
+          { id: "AKB48", type: "group", label: "AKB48", sub: "이전 활동" },
+          { id: "아이브(2021)", type: "group", label: "아이브 (2021)", sub: "재데뷔" },
+          { id: "르세라핌(2022)", type: "group", label: "르세라핌 (2022)", sub: "재데뷔" },
+          { id: "세이마이네임(2024)", type: "group", label: "세이마이네임 (2024)", sub: "재데뷔" },
+
+          // Agencies
+          { id: "울림 엔터테인먼트", type: "agency", label: "울림 엔터" },
+          { id: "알비더블유", type: "agency", label: "알비더블유(RBW)" },
+          { id: "A.M. 엔터테인먼트", type: "agency", label: "A.M. 엔터" },
+          { id: "쏘스뮤직(하이브)", type: "agency", label: "쏘스뮤직(하이브)" },
+          { id: "8D 엔터테인먼트", type: "agency", label: "8D 엔터" },
+          { id: "Peace 엔터테인먼트", type: "agency", label: "Peace 엔터" },
+          { id: "위에화 엔터테인먼트", type: "agency", label: "위에화 엔터" },
+          { id: "WM 엔터테인먼트", type: "agency", label: "WM 엔터" },
+          { id: "매니지먼트 숲", type: "agency", label: "매니지먼트 숲" },
+          { id: "TWIN PLANET", type: "agency", label: "TWIN PLANET" },
+          { id: "iNCODE", type: "agency", label: "iNCODE" },
+          { id: "웨이크원", type: "agency", label: "웨이크원" },
+          { id: "스타쉽엔터테인먼트", type: "agency", label: "스타쉽엔터" },
+
+          // Career Paths
+          { id: "솔로 가수", type: "career", label: "솔로 가수" },
+          { id: "배우", type: "career", label: "배우" },
+
+          // Produce 48 Final Units
+          { id: "반해버리잖아?", type: "unit", label: "반해버리잖아?" },
+          { id: "앞으로 잘 부탁해", type: "unit", label: "앞으로 잘 부탁해" }
+        ];
+
+        const rawLinks = [
+          // Previous Groups (활동하였다)
+          { source: "미야와키 사쿠라", target: "HKT48", rel: "활동하였다" },
+          { source: "미야와키 사쿠라", target: "AKB48", rel: "활동하였다" },
+          { source: "야부키 나코", target: "HKT48", rel: "활동하였다" },
+          { source: "혼다 히토미", target: "AKB48", rel: "활동하였다" },
+
+          // Agencies (소속되었다)
+          { source: "권은비", target: "울림 엔터테인먼트", rel: "소속되었다" },
+          { source: "권은비", target: "알비더블유", rel: "소속되었다" },
+          { source: "미야와키 사쿠라", target: "A.M. 엔터테인먼트", rel: "소속되었다" },
+          { source: "미야와키 사쿠라", target: "쏘스뮤직(하이브)", rel: "소속되었다" },
+          { source: "강혜원", target: "8D 엔터테인먼트", rel: "소속되었다" },
+          { source: "강혜원", target: "Peace 엔터테인먼트", rel: "소속되었다" },
+          { source: "최예나", target: "위에화 엔터테인먼트", rel: "소속되었다" },
+          { source: "이채연", target: "WM 엔터테인먼트", rel: "소속되었다" },
+          { source: "김채원", target: "울림 엔터테인먼트", rel: "소속되었다" },
+          { source: "김채원", target: "쏘스뮤직(하이브)", rel: "소속되었다" },
+          { source: "김민주", target: "매니지먼트 숲", rel: "소속되었다" },
+          { source: "야부키 나코", target: "TWIN PLANET", rel: "소속되었다" },
+          { source: "혼다 히토미", target: "iNCODE", rel: "소속되었다" },
+          { source: "조유리", target: "웨이크원", rel: "소속되었다" },
+          { source: "안유진", target: "스타쉽엔터테인먼트", rel: "소속되었다" },
+          { source: "장원영", target: "스타쉽엔터테인먼트", rel: "소속되었다" },
+
+          // Redebut Groups (재데뷔하였다)
+          { source: "안유진", target: "아이브(2021)", rel: "재데뷔하였다", note: "2021" },
+          { source: "장원영", target: "아이브(2021)", rel: "재데뷔하였다", note: "2021" },
+          { source: "미야와키 사쿠라", target: "르세라핌(2022)", rel: "재데뷔하였다", note: "2022" },
+          { source: "김채원", target: "르세라핌(2022)", rel: "재데뷔하였다", note: "2022" },
+          { source: "혼다 히토미", target: "세이마이네임(2024)", rel: "재데뷔하였다", note: "2024" },
+
+          // Career Paths (해체 후 진로)
+          { source: "권은비", target: "솔로 가수", rel: "진로", note: "2021" },
+          { source: "조유리", target: "솔로 가수", rel: "진로", note: "2021" },
+          { source: "최예나", target: "솔로 가수", rel: "진로", note: "2022" },
+          { source: "이채연", target: "솔로 가수", rel: "진로", note: "2022" },
+          { source: "강혜원", target: "배우", rel: "진로" },
+          { source: "김민주", target: "배우", rel: "진로" },
+          { source: "야부키 나코", target: "배우", rel: "진로" },
+
+          // Produce 48 Final Units (참여하였다)
+          { source: "권은비", target: "반해버리잖아?", rel: "참여하였다" },
+          { source: "최예나", target: "반해버리잖아?", rel: "참여하였다" },
+          { source: "미야와키 사쿠라", target: "반해버리잖아?", rel: "참여하였다" },
+          { source: "강혜원", target: "반해버리잖아?", rel: "참여하였다" },
+          { source: "김채원", target: "반해버리잖아?", rel: "참여하였다" },
+          { source: "혼다 히토미", target: "앞으로 잘 부탁해", rel: "참여하였다" },
+          { source: "조유리", target: "앞으로 잘 부탁해", rel: "참여하였다" },
+          { source: "장원영", target: "앞으로 잘 부탁해", rel: "참여하였다" },
+          { source: "안유진", target: "앞으로 잘 부탁해", rel: "참여하였다" },
+          { source: "김민주", target: "앞으로 잘 부탁해", rel: "참여하였다" },
+          { source: "야부키 나코", target: "앞으로 잘 부탁해", rel: "참여하였다" },
+          { source: "이채연", target: "앞으로 잘 부탁해", rel: "참여하였다" }
+        ];
+
+        let currentFilter = "all";
+        const svg = d3.select(svgEl);
+        let width = svgEl.clientWidth || 920;
+        let height = svgEl.clientHeight || 540;
+
+        svg.selectAll("*").remove();
+
+        // Container group for zoom & pan
+        const g = svg.append("g").attr("class", "graph-container");
+
+        // Zoom Behavior
+        const zoom = d3.zoom()
+          .scaleExtent([0.4, 3.5])
+          .on("zoom", (event) => {
+            g.attr("transform", event.transform);
+          });
+
+        svg.call(zoom);
+
+        // Zoom action buttons
+        document.getElementById("btn-zoom-in").onclick = () => {
+          svg.transition().duration(250).call(zoom.scaleBy, 1.3);
+        };
+        document.getElementById("btn-zoom-out").onclick = () => {
+          svg.transition().duration(250).call(zoom.scaleBy, 0.77);
+        };
+        document.getElementById("btn-zoom-reset").onclick = () => {
+          svg.transition().duration(350).call(zoom.transform, d3.zoomIdentity);
+        };
+
+        // Graph Simulation Setup
+        const simulation = d3.forceSimulation()
+          .force("link", d3.forceLink().id(d => d.id).distance(d => {
+            if (d.rel === "재데뷔하였다") return 95;
+            if (d.target.type === "agency") return 80;
+            if (d.target.type === "unit") return 110;
+            return 85;
+          }))
+          .force("charge", d3.forceManyBody().strength(-240))
+          .force("center", d3.forceCenter(width / 2, height / 2))
+          .force("collision", d3.forceCollide().radius(26));
+
+        // Links group
+        const linkGroup = g.append("g").attr("class", "links");
+        // Nodes group
+        const nodeGroup = g.append("g").attr("class", "nodes");
+
+        let linkSelection = linkGroup.selectAll("line");
+        let nodeSelection = nodeGroup.selectAll("g.node");
+
+        // Build adjacency dictionary for fast highlight
+        const adjMap = new Map();
+        function refreshAdjacency(links) {
+          adjMap.clear();
+          links.forEach(l => {
+            const sId = typeof l.source === "object" ? l.source.id : l.source;
+            const tId = typeof l.target === "object" ? l.target.id : l.target;
+            if (!adjMap.has(sId)) adjMap.set(sId, new Set());
+            if (!adjMap.has(tId)) adjMap.set(tId, new Set());
+            adjMap.get(sId).add(tId);
+            adjMap.get(tId).add(sId);
+          });
+        }
+
+        function updateGraph() {
+          // Determine visible nodes and links
+          let visibleNodes, visibleLinks;
+
+          if (currentFilter === "all") {
+            visibleNodes = rawNodes.map(d => ({ ...d }));
+            visibleLinks = rawLinks.map(d => ({ ...d }));
+          } else if (currentFilter === "person") {
+            // Persons and their direct connections
+            visibleNodes = rawNodes.map(d => ({ ...d }));
+            visibleLinks = rawLinks.map(d => ({ ...d }));
+          } else {
+            // Keep matching target types plus all persons connected to them
+            const targetNodeIds = new Set(rawNodes.filter(n => n.type === currentFilter).map(n => n.id));
+            const connectedPersonIds = new Set();
+            rawLinks.forEach(l => {
+              if (targetNodeIds.has(l.target)) {
+                connectedPersonIds.add(l.source);
+              }
+            });
+
+            const keepIds = new Set([...targetNodeIds, ...connectedPersonIds]);
+            visibleNodes = rawNodes.filter(n => keepIds.has(n.id)).map(d => ({ ...d }));
+            visibleLinks = rawLinks.filter(l => keepIds.has(l.source) && keepIds.has(l.target)).map(d => ({ ...d }));
+          }
+
+          refreshAdjacency(visibleLinks);
+
+          // DATA JOIN: Links
+          linkSelection = linkGroup.selectAll("line")
+            .data(visibleLinks, d => `${typeof d.source === "object" ? d.source.id : d.source}->${typeof d.target === "object" ? d.target.id : d.target}`);
+
+          linkSelection.exit().remove();
+
+          const linkEnter = linkSelection.enter().append("line")
+            .attr("stroke", "#3f3f46")
+            .attr("stroke-width", d => d.rel === "재데뷔하였다" ? 1.8 : 1.2)
+            .attr("stroke-opacity", 0.5)
+            .attr("stroke-dasharray", d => d.rel === "진로" ? "3,3" : "none");
+
+          linkSelection = linkEnter.merge(linkSelection);
+
+          // DATA JOIN: Nodes
+          nodeSelection = nodeGroup.selectAll("g.node")
+            .data(visibleNodes, d => d.id);
+
+          nodeSelection.exit().remove();
+
+          const nodeEnter = nodeSelection.enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+              .on("start", dragstarted)
+              .on("drag", dragged)
+              .on("end", dragended));
+
+          // Render distinct shapes according to type:
+          // 1. Person: large white circle
+          // 2. Agency: gray rounded rectangle
+          // 3. Idol Group: bright gray circle
+          // 4. Career path: stroke-only circle
+          // 5. Unit: small gray circle
+          nodeEnter.each(function (d) {
+            const el = d3.select(this);
+
+            if (d.type === "person") {
+              el.append("circle")
+                .attr("r", 15)
+                .attr("fill", "#ffffff")
+                .attr("stroke", "#27272a")
+                .attr("stroke-width", 2);
+            } else if (d.type === "agency") {
+              el.append("rect")
+                .attr("x", -13)
+                .attr("y", -13)
+                .attr("width", 26)
+                .attr("height", 26)
+                .attr("rx", 4)
+                .attr("fill", "#71717a")
+                .attr("stroke", "#3f3f46")
+                .attr("stroke-width", 1.5);
+            } else if (d.type === "group") {
+              el.append("circle")
+                .attr("r", 14)
+                .attr("fill", "#d4d4d8")
+                .attr("stroke", "#a1a1aa")
+                .attr("stroke-width", 1.5);
+            } else if (d.type === "career") {
+              el.append("circle")
+                .attr("r", 14)
+                .attr("fill", "rgba(24, 24, 27, 0.8)")
+                .attr("stroke", "#ffffff")
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "4,2");
+            } else if (d.type === "unit") {
+              el.append("circle")
+                .attr("r", 10)
+                .attr("fill", "#3f3f46")
+                .attr("stroke", "#71717a")
+                .attr("stroke-width", 1.5);
+            }
+
+            // Text Label
+            el.append("text")
+              .attr("dy", d.type === "person" ? 27 : 24)
+              .attr("text-anchor", "middle")
+              .attr("fill", d.type === "person" ? "#fafafa" : "#a1a1aa")
+              .attr("font-size", d.type === "person" ? "12px" : "11px")
+              .attr("font-weight", d.type === "person" ? "600" : "400")
+              .style("pointer-events", "none")
+              .text(d.label);
+          });
+
+          // Interactive Hover Handlers
+          nodeEnter
+            .on("mouseenter", function (event, d) {
+              highlightNode(d);
+              showInspector(d);
+            })
+            .on("mouseleave", function () {
+              resetHighlight();
+              hideInspector();
+            });
+
+          nodeSelection = nodeEnter.merge(nodeSelection);
+
+          // Restart simulation
+          simulation.nodes(visibleNodes).on("tick", ticked);
+          simulation.force("link").links(visibleLinks);
+          simulation.alpha(0.8).restart();
+        }
+
+        function ticked() {
+          linkSelection
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+          nodeSelection
+            .attr("transform", d => `translate(${d.x},${d.y})`);
+        }
+
+        // Drag handlers
+        function dragstarted(event, d) {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+          d.fx = event.x;
+          d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+          if (!event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        }
+
+        // Highlight connected nodes & edges
+        function highlightNode(d) {
+          const neighbors = adjMap.get(d.id) || new Set();
+
+          nodeSelection.style("opacity", n => {
+            return (n.id === d.id || neighbors.has(n.id)) ? 1 : 0.12;
+          });
+
+          linkSelection.style("stroke-opacity", l => {
+            const sId = l.source.id;
+            const tId = l.target.id;
+            if (sId === d.id || tId === d.id) {
+              return 0.95;
+            }
+            return 0.05;
+          }).style("stroke", l => {
+            const sId = l.source.id;
+            const tId = l.target.id;
+            if (sId === d.id || tId === d.id) {
+              return "#ffffff";
+            }
+            return "#3f3f46";
+          });
+        }
+
+        function resetHighlight() {
+          nodeSelection.style("opacity", 1);
+          linkSelection
+            .style("stroke-opacity", 0.5)
+            .style("stroke", "#3f3f46");
+        }
+
+        // Inspector Box Update
+        const inspectorEl = document.getElementById("graph-inspector");
+        const inspectNameEl = document.getElementById("inspect-name");
+        const inspectTypeEl = document.getElementById("inspect-type");
+        const inspectDetailsEl = document.getElementById("inspect-details");
+
+        const typeLabels = {
+          person: "인물 (아이즈원 멤버)",
+          agency: "소속사",
+          group: "아이돌 그룹",
+          career: "해체 후 진로",
+          unit: "프로듀스48 경연 유닛"
+        };
+
+        function showInspector(node) {
+          if (!inspectorEl) return;
+          inspectNameEl.textContent = node.label;
+          inspectTypeEl.textContent = typeLabels[node.type] || node.type;
+
+          // Find connected relationships
+          const relatedLinks = rawLinks.filter(l => l.source === node.id || l.target === node.id);
+          if (relatedLinks.length === 0) {
+            inspectDetailsEl.innerHTML = "<span>연결된 관계 없음</span>";
+          } else {
+            const items = relatedLinks.map(l => {
+              if (l.source === node.id) {
+                return `<strong>${l.rel}</strong> → ${l.target}${l.note ? ` (${l.note})` : ''}`;
+              } else {
+                return `${l.source} → <strong>${l.rel}</strong>${l.note ? ` (${l.note})` : ''}`;
+              }
+            });
+            inspectDetailsEl.innerHTML = items.join("<br/>");
+          }
+
+          inspectorEl.classList.add("visible");
+        }
+
+        function hideInspector() {
+          if (!inspectorEl) return;
+          inspectorEl.classList.remove("visible");
+        }
+
+        // Filter button clicks
+        document.querySelectorAll("#graph-filters .filter-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll("#graph-filters .filter-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentFilter = btn.getAttribute("data-filter");
+            updateGraph();
+          });
+        });
+
+        // Window resize support
+        window.resizeD3Graph = () => {
+          width = svgEl.clientWidth || 920;
+          height = svgEl.clientHeight || 540;
+          simulation.force("center", d3.forceCenter(width / 2, height / 2));
+          simulation.alpha(0.3).restart();
+        };
+
+        window.addEventListener("resize", () => {
+          if (graphInitialized && window.resizeD3Graph) {
+            window.resizeD3Graph();
+          }
+        });
+
+        // Initial graph render
+        updateGraph();
+      }
+    })();
+  </script>
+</body>
+</html>

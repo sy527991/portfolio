@@ -1,0 +1,6 @@
+{
+  "name": "유사라 포트폴리오",
+  "description": "언어와 데이터를 잇는 인문학도 유사라의 개인 포트폴리오 웹사이트",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
